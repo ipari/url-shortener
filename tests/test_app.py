@@ -47,6 +47,20 @@ def test_dashboard_requires_login(client):
     assert "/login" in response.location
 
 
+def test_theme_controls_and_script(client):
+    login_page = client.get("/login")
+    assert "data-theme-selector" in login_page.text
+    assert login_page.text.index("theme.js") < login_page.text.index("style.css")
+
+    theme_script = client.get("/static/theme.js")
+    assert theme_script.status_code == 200
+    assert "prefers-color-scheme: dark" in theme_script.text
+    assert "localStorage" in theme_script.text
+
+    login(client)
+    assert "data-theme-selector" in client.get("/").text
+
+
 def test_create_follow_count_and_delete(client, app):
     assert login(client).status_code == 302
     response = create_url(client, "example.com/page")

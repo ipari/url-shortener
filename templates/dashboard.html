@@ -2,10 +2,13 @@
 {% block content %}
 <header class="topbar">
   <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark small">S</span> Shortly</a>
-  <form method="post" action="{{ url_for('logout') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button class="ghost" type="submit">로그아웃</button>
-  </form>
+  <div class="topbar-actions">
+    {% include "_theme_control.html" %}
+    <form method="post" action="{{ url_for('logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="ghost" type="submit">로그아웃</button>
+    </form>
+  </div>
 </header>
 
 <section class="hero">
