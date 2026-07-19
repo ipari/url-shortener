@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="topbar">
+  <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark small">S</span> Shortly</a>
+  <form method="post" action="{{ url_for('logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="ghost" type="submit">로그아웃</button>
+  </form>
+</header>
+
+<section class="hero">
+  <p class="eyebrow">PERSONAL URL SHORTENER</p>
+  <h1>긴 링크를 짧게,<br><span>관리는 한눈에.</span></h1>
+  <form method="post" action="{{ url_for('create_url') }}" class="create-form card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="original_url" placeholder="https://example.com 또는 obsidian://open?..." aria-label="원본 URL" required>
+    <button type="submit">링크 줄이기</button>
+  </form>
+  {% if created_url %}
+  <div class="created-result card" role="status">
+    <div>
+      <span>{% if result_kind == 'existing' %}이미 등록된 링크입니다{% else %}새 링크가 만들어졌습니다{% endif %}</span>
+      <a href="{{ created_url }}" target="_blank" rel="noopener noreferrer">{{ created_url }}</a>
+    </div>
+    <button type="button" class="copy-button" data-copy="{{ created_url }}">복사</button>
+  </div>
+  {% endif %}
+</section>
+
+{% for category, message in get_flashed_messages(with_categories=true) %}
+  <div class="flash {{ category }}">{{ message }}</div>
+{% endfor %}
+
+<section class="links-section">
+  <div class="section-heading">
+    <div><p class="eyebrow">MY LINKS</p><h2>내 URL 목록</h2></div>
+    <span class="count">{{ urls|length }}개</span>
+  </div>
+  {% if urls %}
+  <div class="table-card card">
+    <table>
+      <thead><tr><th>원래 URL</th><th>단축 URL</th><th>조회수</th><th><span class="sr-only">관리</span></th></tr></thead>
+      <tbody>
+      {% for item in urls %}
+        {% set short_url = url_for('follow_short_url', code=item.code, _external=true) %}
+        <tr>
+          <td class="original"><a href="{{ item.original_url }}" target="_blank" rel="noopener noreferrer">{{ item.original_url }}</a></td>
+          <td><a class="short-link" href="{{ short_url }}" target="_blank">{{ short_url }}</a></td>
+          <td><span class="clicks">{{ item.clicks }}</span></td>
+          <td>
+            <form method="post" action="{{ url_for('delete_url', url_id=item.id) }}" onsubmit="return confirm('이 단축 URL을 삭제할까요?')">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="delete" type="submit" aria-label="삭제">삭제</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty card"><div>↗</div><h3>아직 만든 링크가 없습니다</h3><p>위 입력창에 첫 URL을 붙여 넣어 보세요.</p></div>
+  {% endif %}
+</section>
+<script>
+  const copyButton = document.querySelector('[data-copy]');
+  copyButton?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(copyButton.dataset.copy);
+      copyButton.textContent = '복사됨!';
+      copyButton.classList.add('copied');
+      setTimeout(() => {
+        copyButton.textContent = '복사';
+        copyButton.classList.remove('copied');
+      }, 1800);
+    } catch {
+      const input = document.createElement('textarea');
+      input.value = copyButton.dataset.copy;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      input.remove();
+      copyButton.textContent = '복사됨!';
+    }
+  });
+</script>
+{% endblock %}

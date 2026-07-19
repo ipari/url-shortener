@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}로그인 · Shortly{% endblock %}
+{% block content %}
+<section class="login-card card">
+  <div class="brand-mark">S</div>
+  <h1>Shortly</h1>
+  <p class="muted">내 링크를 간결하게 관리하세요.</p>
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+  <form method="post" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>아이디<input name="username" required autocomplete="username" autofocus></label>
+    <label>비밀번호<input type="password" name="password" required autocomplete="current-password"></label>
+    <button type="submit">로그인</button>
+  </form>
+</section>
+{% endblock %}
