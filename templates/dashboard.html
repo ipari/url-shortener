@@ -13,7 +13,7 @@
   <h1>긴 링크를 짧게,<br><span>관리는 한눈에.</span></h1>
   <form method="post" action="{{ url_for('create_url') }}" class="create-form card">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="text" name="original_url" placeholder="https://example.com 또는 obsidian://open?..." aria-label="원본 URL" required>
+    <input type="text" name="original_url" placeholder="https://example.com/very-long-url" aria-label="원본 URL" required>
     <button type="submit">링크 줄이기</button>
   </form>
   {% if created_url %}
