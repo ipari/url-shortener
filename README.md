@@ -18,6 +18,32 @@ flask --app app run
 
 브라우저에서 `http://127.0.0.1:5000`을 엽니다. 데이터는 자동으로 생성되는 `instance/urls.sqlite3`에 저장됩니다.
 
+## Docker로 실행
+
+먼저 환경변수 파일을 준비하고 관리자 비밀번호와 비밀키를 안전한 값으로 변경합니다.
+
+```bash
+cp .env.example .env
+```
+
+그다음 이미지를 빌드하고 컨테이너를 실행합니다.
+
+```bash
+docker compose up --build -d
+```
+
+브라우저에서 `http://127.0.0.1:5000`을 엽니다. SQLite 데이터와 자동 생성 비밀키는 `shortly-data` Docker 볼륨에 보존됩니다.
+포트 5000이 이미 사용 중이면 `.env`의 `URL_SHORTENER_PORT`를 다른 포트로 변경하세요.
+
+로그 확인과 종료에는 다음 명령을 사용합니다.
+
+```bash
+docker compose logs -f shortly
+docker compose down
+```
+
+`docker compose down`은 데이터 볼륨을 삭제하지 않습니다. 데이터까지 삭제하려는 경우에만 `docker compose down --volumes`를 사용하세요.
+
 운영 환경에서는 환경변수를 반드시 설정하고, 개발 서버 대신 다음처럼 실행하세요.
 
 ```powershell
