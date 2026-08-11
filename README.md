@@ -56,6 +56,30 @@ gunicorn -w 2 -b 0.0.0.0:8000 app:app
 
 평문 비밀번호 환경변수 대신 Werkzeug 형식의 해시를 `URL_SHORTENER_PASSWORD_HASH`에 지정할 수 있습니다. 이 값이 있으면 `URL_SHORTENER_PASSWORD`보다 우선합니다.
 
+의존성을 설치한 Python 환경에서 다음 명령을 실행하고, 프롬프트에 사용할 비밀번호를 입력합니다. 입력한 비밀번호는 화면에 표시되지 않습니다.
+
+```bash
+python -c "from getpass import getpass; from werkzeug.security import generate_password_hash; print(generate_password_hash(getpass('비밀번호: ')))"
+```
+
+Docker만 설치된 환경에서는 다음 명령으로 생성할 수도 있습니다.
+
+```bash
+docker compose run --rm shortly python -c "from getpass import getpass; from werkzeug.security import generate_password_hash; print(generate_password_hash(getpass('비밀번호: ')))"
+```
+
+출력된 해시를 `.env`에 지정합니다. 해시에 포함된 `$` 문자가 그대로 전달되도록 값을 작은따옴표로 감싸세요.
+
+```dotenv
+URL_SHORTENER_PASSWORD_HASH='<생성된-해시>'
+```
+
+Docker 컨테이너가 실행 중이었다면 새 환경변수가 적용되도록 다시 생성합니다.
+
+```bash
+docker compose up -d --force-recreate
+```
+
 ## 테스트
 
 ```powershell
